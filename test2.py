@@ -94,9 +94,9 @@ def draw_petri_net():
             for place, value in rule.get("input", {}).items():
                 petri_net.add_edge(place, transition, weight=value)
             
-            # Output arcs (transition -> places) are directed
+            # Output arcs (transition -> places) are directed (important fix)
             for place, value in rule.get("output", {}).items():
-                petri_net.add_edge(transition, place, weight=value)
+                petri_net.add_edge(transition, place, weight=value)  # Ensure these arcs are directed from transition to place
 
         # Draw the Petri Net
         plt.figure(figsize=(10, 7))
@@ -115,7 +115,7 @@ def draw_petri_net():
             plt.gca().add_patch(rectangle)
 
         # Draw edges (arcs) with arrows
-        nx.draw_networkx_edges(petri_net, pos, connectionstyle="arc3,rad=0.2", width=2, arrowsize=20)
+        nx.draw_networkx_edges(petri_net, pos, connectionstyle="arc3,rad=0.2", width=2, arrowsize=20, edge_color='black')
         
         # Draw labels for places and transitions
         nx.draw_networkx_labels(petri_net, pos, font_size=10, font_weight="bold")
