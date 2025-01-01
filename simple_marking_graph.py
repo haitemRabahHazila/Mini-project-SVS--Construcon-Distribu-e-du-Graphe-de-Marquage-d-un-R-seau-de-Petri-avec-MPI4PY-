@@ -1,5 +1,3 @@
-#  this is the correct code 
-
 from mpi4py import MPI
 
 # Initialize MPI
@@ -8,34 +6,11 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 # Example initial marking and transitions
-# initial_marking = {
-#     'p1': 1,
-#     'p2': 0,
-#     'p3': 0,
-#     'p4': 0
-# }
-# transitions = {
-#     't1': {
-#         'input': {'p1': 1},
-#         'output': {'p2': 1}
-#     },
-#     't2': {
-#         'input': {'p2': 1},
-#         'output': {'p3': 1}
-#     },
-#     't3': {
-#         'input': {'p2': 1},
-#         'output': {'p4': 1}
-#     }
-# }
-
 initial_marking = {
     'p1': 1,
     'p2': 0,
     'p3': 0,
-    'p4': 0,
-    'p5': 0,
-    'p6': 0
+    'p4': 0
 }
 transitions = {
     't1': {
@@ -47,18 +22,30 @@ transitions = {
         'output': {'p3': 1}
     },
     't3': {
-        'input': {'p2': 1},
+        'input': {'p3': 2},
         'output': {'p4': 1}
-    },
-    't4': {
-        'input': {'p3': 1},
-        'output': {'p5': 1}
-    },
-    't5': {
-        'input': {'p3': 1},
-        'output': {'p6': 1}
     }
 }
+# initial_marking = {
+#     'p1': 1,
+#     'p2': 1,
+#     'p3': 0,
+#     'p4': 0
+# }
+# transitions = {
+#     't1': {
+#         'input': {'p1': 1},
+#         'output': {'p3': 1}
+#     },
+#     't2': {
+#         'input': {'p2': 1},
+#         'output': {'p3': 1}
+#     },
+#     't3': {
+#         'input': {'p3': 2},
+#         'output': {'p4': 1}
+#     }
+# }
 
 # Function to hash a marking and determine the responsible site
 def hash_marking(marking):
@@ -120,7 +107,7 @@ explored_markings = set()
 graph_edges = []  # Pour stocker les transitions entre les marquages
 
 # Limit exploration depth
-max_depth = 100
+max_depth = 10
 current_depth = 0
 
 # Explore markings
@@ -161,17 +148,8 @@ if rank == 0:
     for edges in all_edges:
         global_edges.extend(edges)
 
-    # Ensure all markings in edges are included in global_markings
-    for edge in global_edges:
-        source, target, _ = edge
-        global_markings.add(source)
-        global_markings.add(target)
-
-    # Sort the markings and reverse the order
-    sorted_markings = sorted(global_markings, reverse=True)  # Reverse the order here
-
-    # Assign unique IDs to markings in reverse order
-    marking_to_id = {marking: f"M{i}" for i, marking in enumerate(sorted_markings)}
+    # Assign unique IDs to markings
+    marking_to_id = {marking: f"M{i}" for i, marking in enumerate(sorted(global_markings))}
 
     # Print the global marking graph
     print("Global Marking Graph:")
